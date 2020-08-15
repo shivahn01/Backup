@@ -1,0 +1,370 @@
+<html>
+	<head>
+			<title>SlideDrop</title>
+			<script src="jquery-2.1.1.min.js"></script>
+			<style>
+				* {
+					    margin: 0px;
+					    padding: 0px;
+					    border:0px;
+					}
+					#slidedrop {
+					    display: block;
+					    position: relative;
+					    overflow:hidden;
+					    height:150px;
+					}
+					/* position the slide container in required area in doc - default to top left corner */
+					 #slidedrop {
+					    top: 50px;
+					    left: 10px;
+					}
+					.slideitems {
+					    display:block;
+					    width: 200px;
+					    height: 150px;
+					    position: absolute;
+					}
+					.slideitems img {
+					    position:absolute;
+					    top:0px;
+					}
+					/* Show the first item */
+					 .slideitems > img:first-of-type {
+					    display:block;
+					    top:0px;
+					    /* Make the first element to show   */
+					}
+					/* slide transition css from top to bottom */
+					 .slidetransition {
+					    -webkit-transform:translate(0px, 150px);
+					    -webkit-transition: width 2s, height 2s, -webkit-transform 2s;
+					    z-index:999;
+					}
+					.slidelinks {
+					    display:inline-block;
+					    width:200px;
+					    text-align:center;
+					    position:relative;
+					    top: 120px;
+					    z-index:999;
+					}
+					.slidelinks ul li {
+					    list-style-type: none;
+					    display:inline-block;
+					    width:15%;
+					    text-align: center;
+					    height:30px;
+					    padding-top: 10px;
+					}
+					.slidelinks ul li a {
+					    text-decoration: none;
+					}
+					.active {
+					    display:block;
+					    background-color: red;
+					}
+					.stackup {
+					    z-index:2;
+					}
+					/* second slide */
+					 #slidedrop1 {
+					    display: block;
+					    position: relative;
+					    overflow:hidden;
+					}
+					#slidedrop1 {
+					    top: -101px;
+					    left: 300px;
+					}
+					.slideitems1 {
+					    display:block;
+					    width: 200px;
+					    height: 150px;
+					    position: relative;
+					}
+					.slideitems1 img {
+					    position:absolute;
+					    top:-150px;
+					}
+					/* Show the first item */
+					 .slideitems1 > img:first-of-type {
+					    display:block;
+					    top:0px;
+					    z-index:1;
+					    /* Make the first element to show   */
+					}
+					.slidelinks1 {
+					    display:inline-block;
+					    width:200px;
+					    text-align:center;
+					}
+					.slidelinks1 ul li {
+					    list-style-type: none;
+					    display:inline-block;
+					    width:15%;
+					    text-align: center;
+					    height:30px;
+					    padding-top: 10px;
+					}
+					.slidelinks1 ul li a {
+					    text-decoration: none;
+					}
+					.active {
+					    display:block;
+					    background-color: red;
+					}
+					/* 3 - slider */
+					 #slidedrop {
+					    display: block;
+					    position: relative;
+					    overflow:hidden;
+					    height:150px;
+					}
+					/* position the slide container in required area in doc - default to top left corner */
+					 #slidedrop2 {
+					    display: block;
+					    position: relative;
+					    overflow:hidden;
+					    height:150px;
+					}
+					#slidedrop2 {
+					    top: -101px;
+					    left: 300px;
+					}
+					.slidelinks2 {
+					    display: block;
+					    text-align: center;
+					    position: relative;
+					    top: -5px;
+					    left: 0px;
+					    z-index: 999;
+					    overflow: visible;
+					}
+					.slidelinks2 ul li {
+					    list-style-type: none;
+					    width:5%;
+					    text-align: center;
+					    height:30px;
+					    padding-top: 10px;
+					}
+					.slidelinks2 ul li a {
+					    text-decoration: none;
+					}
+			</style>
+	</head>
+	<body>
+				<h2>Examples: jQuery Plugin - slideDrop Carousel, Image Slider</h2>
+
+				<div id="slidedrop">
+				    <div class="slideitems">
+				        <img src="http://dummyimage.com/200x150/ccc/fff&text=1" class="slideitem stackup" />
+				        <img src="http://dummyimage.com/200x150/000000/fff&text=2" class="slideitem" />
+				        <img src="http://dummyimage.com/200x150/ccc/fff&text=3" class="slideitem" />
+				        <img src="http://dummyimage.com/200x150/000/fff&text=4" class="slideitem" />
+				    </div>
+				    <div class="slidelinks"></div>
+				</div>
+				<div id="slidedrop2">
+				    <div class="slideitems">
+				        <img src="http://dummyimage.com/200x150/ccc/fff&text=1" class="slideitem stackup" />
+				        <img src="http://dummyimage.com/200x150/000000/fff&text=2" class="slideitem" />
+				        <img src="http://dummyimage.com/200x150/ccc/fff&text=3" class="slideitem" />       
+				    </div>
+				    <div class="slidelinks2"></div>
+				</div>
+		<script>
+				$.fn.SlideDrop = function (options, callback) {
+					var self = this;
+					
+
+					//debugger;
+					function slide (that) {
+							var counter = 0;
+							var items = [];
+							var totalItems = 0;
+							var autoanimate = '';
+							var links = [];	
+							cleanParams =  function (options) {
+
+								console.log('Inside cleanParams');
+								$.each(options, function (index, element) {
+									if (index.match(/Class$/i)) {
+										options[index] = '.' + options[index];
+									} else if (index.match(/Id$/i)) {
+										options[index] = '#' + options[index];
+									} else if (index.match(/Elem$/i)) {
+										options[index] = options[index];
+									} else {
+										options[index] = options[index];
+									}
+								});
+
+							},
+							removePrefixFromParam = function(param){
+									 if (param) { return param.replace(/^[.#]/,''); }
+
+							},
+							getTotalItems = function () {
+
+								totalItems = that.find(options.itemContainerClass + ' ' + options.itemClass).length;
+								console.log('Inside getTotalItems'+totalItems);
+							},
+							getItems = function () {
+								
+								$.each(that.find(options.itemContainerClass + ' ' + options.itemClass), function () {
+									items.push($(this));
+									console.log('Inside getItems');
+								});
+
+
+							},
+							getLinks = function () {
+								console.log('Inside getLinks');
+								console.log(options.slidelinksContainerClass);
+								$.each(that.find(options.slidelinksContainerClass + ' ul li'), function () {
+									console.log(that);
+									links.push($(this));
+								});
+							},
+
+							createLinks = function () {
+									console.log('Inside createLinks');
+								var docfrag = $('<ul>');
+								$.each(items, function (index, value) {
+										console.log('Inside each st');
+										console.log(index);
+										console.log(value);
+									docfrag.append('<li><a href="#">' + (options.linkText ? options.linkText : (+index + 1)) + '</a</li>').addClass(removePrefixFromParam(options.slidelinkClass));
+
+								});
+								that.find($(options.slidelinksContainerClass)).append(docfrag);
+
+/*								switch (options.animate) {
+
+									case 'slidefromtop':
+										this.delegate(options.slidelinksContainerClass + ' ul li', "click", function (e) {
+											this.stopAnimation();
+											var index = $(this).index();
+											counter = index;
+											this.highlightLink();
+											this.removeAnimation(items);
+											if (index) {
+												this.startAnimation(items[index]);
+											}
+										});
+										break;
+									case 'slidecurrentframe':
+											
+										this.delegate(options.slidelinksContainerClass + ' ul li', "click", function (e) {
+											this.stopAnimation();
+											var index = $(this).index();
+											var prevcounter = counter;
+											counter = index;
+											this.highlightLink();
+											this.removeAnimation(items);
+											this.removeStackUp();
+											if (index) {
+												this.stackUp(items[index]);
+												this.startAnimation(items[prevcounter]);
+
+											} else {
+												this.stackUp(items[index]);
+												this.startAnimation(items[prevcounter]);
+											}
+										});
+										break;
+
+								}*/
+
+
+							},
+
+							getCurrentIndex = function () {
+								return counter;
+							},
+
+							incCurrentIndex = function () {
+								
+								return  (counter >= totalItems) ? counter = 0 : counter = counter + 1;
+								
+							},
+
+							highlightLink = function (that) {
+									if(counter >= totalItems) counter = 0; 
+								$.each(links, function (index, value) {
+									this.removeClass(removePrefixFromParam(options.activeClass));
+								});
+								console.log('--------');
+								console.log(that);
+								console.log('xxxxxxxxxxxxxxxxxxxx');
+								links[counter].addClass(removePrefixFromParam(options.activeClass));
+
+							},
+
+							slideCurrentFrame = function(that) {
+												this.highlightLink(that);
+												this.incCurrentIndex(that);
+								
+								
+							},
+							init = function(){
+								htm	console.log('Inside init');
+									this.cleanParams(options);
+									this.getTotalItems();
+									this.getItems();	
+									this.createLinks();
+									this.getLinks();
+									switch (options.animate) {
+										case 'slidecurrentframe':
+
+											setInterval(function() { slideCurrentFrame(self); },options.delay);
+													
+
+									}
+									
+									
+							}
+
+							init();
+
+					};
+
+					slide(self);
+
+
+
+	};
+
+
+
+	$("#slidedrop").SlideDrop({
+		animate: 'slidecurrentframe',
+		itemContainerClass: "slideitems",
+		itemClass: "slideitem",
+		activeClass: "active",
+		slidelinksContainerClass: "slidelinks",
+		slidelinkClass: "slidelink",
+		intransitionClass: "slidetransition",
+		stackupClass: "stackup",
+		linkText: '',
+		'delay': 5000
+	});
+
+	$("#slidedrop2").SlideDrop({
+		animate: 'slidecurrentframe',
+		itemContainerClass: "slideitems",
+		itemClass: "slideitem",
+		activeClass: "active",
+		slidelinksContainerClass: "slidelinks2",
+		slidelinkClass: "slidelink",
+		intransitionClass: "slidetransition",
+		stackupClass: "stackup",
+		linkText: '',
+		'delay': 5000
+	});
+		</script>
+
+
+	</body>
+</html>

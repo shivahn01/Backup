@@ -1,0 +1,54 @@
+<html>
+<head>
+	<title>Beginner's Guide to React</title>
+	<meta charset="UTF-8" />
+</head>
+  <body>
+    <div id="root"></div>
+    <script src="https://unpkg.com/react@16.3.1/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16.3.1/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.26.0/babel.js"></script>
+    <script src="https://unpkg.com/prop-types@15.6.1/prop-types.js"></script>
+
+    <script type="text/babel">
+      const rootElement = document.getElementById('root');
+      function StopWatch() {
+        return (
+
+          const buttonStyles = {
+              border: '1px solid #ccc',
+              background: '#fff',
+              fontSize: '2em',
+              padding: 15,
+              margin: 5,
+              width: 200,
+          }
+          
+          <div style={{textAlign: 'center'}}>
+              <label
+                style={{
+                  fontSize: '5em',
+                  display: 'block',
+                }}
+              >
+                  {lapse}ms
+              </label>
+
+              <button onClick={this.handleRunClick} style={buttonStyles}>
+                {running ? 'Stop' : 'Start'}
+              </button>
+              
+              <button onClick={this.handleClearClick} style={buttonStyles}>
+                Clear
+              </button>
+            </div>
+
+
+        )
+
+      }
+      ReactDOM.render(<StopWatch />, rootElement )
+    
+    </script>
+  </body>
+</html>

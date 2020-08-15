@@ -1,0 +1,472 @@
+<html>
+	<head>
+			<title>SlideDrop</title>
+			<script src="jquery-2.1.1.min.js"></script>
+			<style>
+				* {
+					    margin: 0px;
+					    padding: 0px;
+					    border:0px;
+					}
+					#slidedrop {
+					    display: block;
+					    position: relative;
+					    overflow:hidden;
+					    height:150px;
+					}
+					/* position the slide container in required area in doc - default to top left corner */
+					 #slidedrop {
+					    top: 50px;
+					    left: 10px;
+					}
+					.slideitems {
+					    display:block;
+					    width: 200px;
+					    height: 150px;
+					    position: absolute;
+					}
+					.slideitems img {
+					    position:absolute;
+					    top:0px;
+					}
+					/* Show the first item */
+					 .slideitems > img:first-of-type {
+					    display:block;
+					    top:0px;
+					    /* Make the first element to show   */
+					}
+					/* slide transition css from top to bottom */
+					 .slidetransition {
+					    -webkit-transform:translate(0px, 150px);
+					    -webkit-transition: width 2s, height 2s, -webkit-transform 2s;
+					    z-index:999;
+					}
+					    display:inline-block;
+					    width:200px;
+					    text-align:center;
+					    position:relative;
+					    top: 120px;
+					    z-index:999;
+					}
+					.slidelinks ul li {
+					.slidelinks {
+					    list-style-type: none;
+					    display:inline-block;
+					    width:15%;
+					    text-align: center;
+					    height:30px;
+					    padding-top: 10px;
+					}
+					.slidelinks ul li a {
+					    text-decoration: none;
+					}
+					.active {
+					    display:block;
+					    background-color: red;
+					}
+					.stackup {
+					    z-index:2;
+					}
+					/* second slide */
+					 #slidedrop1 {
+					    display: block;
+					    position: relative;
+					    overflow:hidden;
+					}
+					#slidedrop1 {
+					    top: -101px;
+					    left: 300px;
+					}
+					.slideitems1 {
+					    display:block;
+					    width: 200px;
+					    height: 150px;
+					    position: relative;
+					}
+					.slideitems1 img {
+					    position:absolute;
+					    top:-150px;
+					}
+					/* Show the first item */
+					 .slideitems1 > img:first-of-type {
+					    display:block;
+					    top:0px;
+					    z-index:1;
+					    /* Make the first element to show   */
+					}
+					.slidelinks1 {
+					    display:inline-block;
+					    width:200px;
+					    text-align:center;
+					}
+					.slidelinks1 ul li {
+					    list-style-type: none;
+					    display:inline-block;
+					    width:15%;
+					    text-align: center;
+					    height:30px;
+					    padding-top: 10px;
+					}
+					.slidelinks1 ul li a {
+					    text-decoration: none;
+					}
+					.active {
+					    display:block;
+					    background-color: red;
+					}
+					/* 3 - slider */
+					 #slidedrop {
+					    display: block;
+					    position: relative;
+					    overflow:hidden;
+					    height:150px;
+					}
+					/* position the slide container in required area in doc - default to top left corner */
+					 #slidedrop2 {
+					    display: block;
+					    position: relative;
+					    overflow:hidden;
+					    height:150px;
+					}
+					#slidedrop2 {
+					    top: -101px;
+					    left: 300px;
+					}
+					.slidelinks2 {
+					    display: block;
+					    text-align: center;
+					    position: relative;
+					    top: -5px;
+					    left: 0px;
+					    z-index: 999;
+					    overflow: visible;
+					}
+					.slidelinks2 ul li {
+					    list-style-type: none;
+					    width:5%;
+					    text-align: center;
+					    height:30px;
+					    padding-top: 10px;
+					}
+					.slidelinks2 ul li a {
+					    text-decoration: none;
+					}
+			</style>
+	</head>
+	<body>
+				<h2>Examples: jQuery Plugin - slideDrop Carousel, Image Slider</h2>
+
+				<div id="slidedrop">
+				    <div class="slideitems">
+				        <img src="http://dummyimage.com/200x150/ccc/fff&text=1" class="slideitem stackup" />
+				        <img src="http://dummyimage.com/200x150/000000/fff&text=2" class="slideitem" />
+				        <img src="http://dummyimage.com/200x150/ccc/fff&text=3" class="slideitem" />
+				        <img src="http://dummyimage.com/200x150/000/fff&text=4" class="slideitem" />
+				    </div>
+				    <div class="slidelinks"></div>
+				</div>
+				<div id="slidedrop2">
+				    <div class="slideitems">
+				        <img src="http://dummyimage.com/200x150/ccc/fff&text=1" class="slideitem stackup" />
+				        <img src="http://dummyimage.com/200x150/000000/fff&text=2" class="slideitem" />
+				        <img src="http://dummyimage.com/200x150/ccc/fff&text=3" class="slideitem" />
+				        <img src="http://dummyimage.com/200x150/000/fff&text=4" class="slideitem" />
+				    </div>
+				    <div class="slidelinks2"></div>
+				</div>
+		<script>
+				$.fn.SlideDrop = function (options, callback) {
+					var self = this,
+						totalItems = 0,
+						items = [],
+						counter = 0;
+						links = [],
+						autoanimate = '',
+						slide = {
+						
+							cleanParams: function (options) {
+								$.each(options, function (index, element) {
+									if (index.match(/Class$/i)) {
+										options[index] = '.' + options[index];
+									} else if (index.match(/Id$/i)) {
+										options[index] = '#' + options[index];
+									} else if (index.match(/Elem$/i)) {
+										options[index] = options[index];
+									} else {
+										options[index] = options[index];
+									}
+								});
+
+							},
+							removePrefixFromParam: function(param){
+									 if (param) { return param.replace(/^[.#]/,''); }
+
+							},
+							getTotalItems: function () {
+
+								totalItems = self.find(options.itemContainerClass + ' ' + options.itemClass).length;
+							},
+
+							getItems: function () {
+								$.each(self.find(options.itemContainerClass + ' ' + options.itemClass), function () {
+									items.push($(this));
+								});
+							},
+							getLinks: function () {
+								$.each(self.find(options.slidelinksContainerClass + ' ul li'), function () {
+									links.push($(this));
+								});
+							},
+							delegate: function (element, event, callback) {
+								self.delegate(element, event, callback);
+
+							},
+							createLinks: function () {
+
+								var docfrag = $('<ul>');
+								$.each(items, function (index, value) {
+
+									docfrag.append('<li><a href="#">' + (options.linkText ? options.linkText : (+index + 1)) + '</a</li>').addClass(slide.removePrefixFromParam(options.slidelinkClass));
+
+								});
+
+								self.find($(options.slidelinksContainerClass)).append(docfrag);
+
+								switch (options.animate) {
+
+									case 'slidefromtop':
+										slide.delegate(options.slidelinksContainerClass + ' ul li', "click", function (e) {
+											slide.stopAnimation();
+											var index = $(this).index();
+											counter = index;
+											slide.highlightLink();
+											slide.removeAnimation(items);
+											if (index) {
+												slide.startAnimation(items[index]);
+											}
+										});
+										break;
+									case 'slidecurrentframe':
+											
+										slide.delegate(options.slidelinksContainerClass + ' ul li', "click", function (e) {
+											slide.stopAnimation();
+											var index = $(this).index();
+											var prevcounter = counter;
+											counter = index;
+											slide.highlightLink();
+											slide.removeAnimation(items);
+											slide.removeStackUp();
+											if (index) {
+												slide.stackUp(items[index]);
+												slide.startAnimation(items[prevcounter]);
+
+											} else {
+												slide.stackUp(items[index]);
+												slide.startAnimation(items[prevcounter]);
+											}
+										});
+										break;
+
+								}
+
+
+							},
+							startAnimation: function (item) {
+
+								item.addClass(slide.removePrefixFromParam(options.intransitionClass));
+							},
+							getCurrentIndex: function () {
+								return counter;
+							},
+
+							highlightLink: function () {
+
+								$.each(links, function (index, value) {
+									this.removeClass(slide.removePrefixFromParam(options.activeClass));
+								});
+								if(links[counter]) links[counter].addClass(slide.removePrefixFromParam(options.activeClass));
+
+							},
+
+							removeAnimation: function () {
+
+								$.each(items, function (index, element) {
+									this.removeClass(slide.removePrefixFromParam(options.intransitionClass));
+								});
+							},
+
+								incCurrentIndex: function () {
+									console.log('before inside Inc counter'+counter);
+									console.log('before inside Inc counter totalItems'+totalItems);
+									var rt =  (counter >= totalItems) ? counter = 0 : counter = counter + 1;
+									
+									console.log('after inside Inc counter'+counter);
+									console.log('after inside Inc counter totalItems'+totalItems);
+									return rt;
+
+								},
+
+							removeStackUp: function () {
+
+								$.each(items, function (index, element) {
+									
+									this.removeClass(slide.removePrefixFromParam(options.stackupClass));
+								});
+							},
+
+							stackUp: function (item) {
+								console.log(item.addClass(slide.removePrefixFromParam(options.stackupClass)));
+								item.addClass(slide.removePrefixFromParam(options.stackupClass));
+								 
+							},
+
+							slideFromTop: function () {
+
+								autoanimate = setInterval(function () {
+										
+									/* remove animation applied once all items transition done */
+									if (counter >= totalItems) {
+										slide.removeAnimation();
+										counter = 0;
+										slide.highlightLink();
+										return;
+									}
+
+									/* dont animate for first item */
+									if (!counter) {
+										slide.highlightLink();
+										slide.incCurrentIndex();
+										return;
+
+									}
+									/* animate */
+									slide.startAnimation(items[counter]);
+									slide.highlightLink();
+									slide.incCurrentIndex();
+								}, options.delay);
+
+							},
+
+							slideCurrentFrame: function (counter,totalItems) {
+
+									setInterval(function () {
+									debugger;
+									console.log(slide.getCurrentIndex());
+									slide.removeAnimation();
+									
+									if (counter >= totalItems) {
+
+										counter = 0;
+										slide.removeStackUp();
+										slide.stackUp(items[counter]);
+										slide.startAnimation(items[totalItems - 1]);
+										slide.highlightLink();
+										return;
+									}
+
+									/* dont animate for first item */
+									if (!counter) {
+
+										slide.highlightLink();
+										slide.incCurrentIndex();
+										return;
+
+									}
+									/* animate */
+
+									slide.removeStackUp();
+									slide.stackUp(items[counter]);
+									slide.startAnimation(items[counter - 1]);
+									slide.highlightLink();
+									slide.incCurrentIndex();
+
+								}, options.delay);
+
+							},
+
+							stopAnimation: function () {
+								clearInterval(autoanimate);
+							},
+							/* Setup the required tasks to animate and call auto animate */
+							init: function () {
+								this.cleanParams(options);
+								this.getTotalItems();
+								this.getItems();
+								this.createLinks();
+								this.getLinks();
+
+								switch (options.animate) {
+									case 'slidefromtop':
+										slide.delegate(options.itemContainerClass, "mouseover", function (e) {
+											slide.stopAnimation();
+										});
+										slide.delegate(options.itemContainerClass, "mouseout", function (e) {
+											slide.slideFromTop();
+										});
+
+									    slide.slideFromTop();
+
+										break;
+									case 'slidecurrentframe':
+										slide.delegate(options.itemContainerClass, "mouseover", function (e) {
+											slide.stopAnimation();
+										});
+										slide.delegate(options.itemContainerClass, "mouseout", function (e) {
+											self.autoanimate = slide.slideCurrentFrame(counter,totalItems);
+										});
+
+										slide.slideCurrentFrame();
+										break;
+									default:
+										console.log('None of the option selected');
+										break;
+								}
+
+
+							}
+
+
+						};
+
+
+					slide.init();
+
+	};
+
+
+
+	$("#slidedrop").SlideDrop({
+		animate: 'slidecurrentframe',
+		itemContainerClass: "slideitems",
+		itemClass: "slideitem",
+		activeClass: "active",
+		slidelinksContainerClass: "slidelinks",
+		slidelinkClass: "slidelink",
+		intransitionClass: "slidetransition",
+		stackupClass: "stackup",
+		linkText: '',
+		'delay': 12000
+	});
+
+
+
+
+	$("#slidedrop2").SlideDrop({
+		animate: 'slidecurrentframe',
+		itemContainerClass: "slideitems",
+		itemClass: "slideitem",
+		activeClass: "active",
+		slidelinksContainerClass: "slidelinks2",
+		slidelinkClass: "slidelink",
+		intransitionClass: "slidetransition",
+		stackupClass: "stackup",
+		linkText: '',
+		'delay': 2000
+	});
+
+
+		</script>
+
+
+	</body>
+</html>

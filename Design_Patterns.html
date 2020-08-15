@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Design Patterns</title>
+
+</head>
+<body>
+  
+<script type="text/javascript" charset="utf-8">
+
+//Design Patterns
+//Design patterns are optimized, reusable solutions to the programming problems that we encounter every day.
+//1) Its not a library or class to plugin to our system and work; its much more than that
+//2) Its a template and has to be used in correct situation
+//3) Its not language specific
+//4) 
+
+//Three kinds of design patterns
+//1) Creational : provides instantiation mechanism; making it easier to create objects in way its suits the situation.
+//Example: Class: Factory, Object: Singleton, Prototype
+//2) Structural : deals with relationship between entities, making it easier for these entites to work together. Based on idea of building blocks of object;
+//Example: Class: Adapter, Object: facade
+//3) Behavioral : Used in communcation between entites and make it easier & flexiable for these entites to communicate
+//Example: Class: Template method, Object:Observer, state, iterator
+
+//*********************************************************************/
+//Constructor Pattern
+
+//Object Creation : 
+//1: There are 3 ways to create the object
+// Each of the following options will create a new empty object:
+var newObject1 = {};
+// or
+var newObject1 = Object.create( Object.prototype );
+// or
+var newObject1 = new Object();
+//*********************************************************************/
+//2: There are 4 ways to key:value can be accessed to an object;
+
+// I: Dot syntax
+newObject.someKey = "Hello World";// Set properties
+var value = newObject.someKey; // Get properties
+
+// II: Square bracket syntax
+newObject["someKey"] = "Hello World"; // Set properties
+var value = newObject["someKey"];// Get properties
+
+// III : Object.defineProperty
+// Set properties
+Object.defineProperty( newObject, "someKey", {
+    value: "for more control of the property's behavior",
+    writable: true,
+    enumerable: true,
+    configurable: true
+});
+ 
+// Short-hand to above approach
+var defineProp = function ( obj, key, value ){
+var config = {
+    value: value,
+    writable: true,
+    enumerable: true,
+    configurable: true
+  };
+  Object.defineProperty( obj, key, config );
+};
+ 
+// To use above defineProp, we then create a new empty "person" object
+var person = Object.create( Object.prototype );
+ 
+// Populate the object with properties
+defineProp( person, "car",  "Delorean" );
+defineProp( person, "dateOfBirth", "1981" );
+defineProp( person, "hasBeard", false );
+//console.log(person);
+// Outputs: Object {car: "Delorean", dateOfBirth: "1981", hasBeard: false}
+ 
+ 
+// IV: Object.defineProperties
+// Set properties
+Object.defineProperties( newObject, {
+  "someKey": {
+    value: "Hello World",
+    writable: true
+  },
+  "anotherKey": {
+    value: "Foo bar",
+    writable: false
+  }
+});
+//*********************************************************************/
+
+//Basic Constructor Pattern
+//Prefixing a call to a constructor function with the keyword "new", 
+//we can tell JavaScript we would like the function to behave like a constructor
+//and instantiate a new object with the members defined by that function.
+function Car( model, year, miles ) {
+  this.model = model;
+  this.year = year;
+  this.miles = miles;
+  this.toString = function () {
+    return this.model + " has done " + this.miles + " miles";
+  };
+}
+// Usage:
+// We can create new instances of the car
+var civic = new Car( "Honda Civic", 2009, 20000 );
+var mondeo = new Car( "Ford Mondeo", 2010, 5000 );
+ 
+// and then open our browser console to view the
+// output of the toString() method being called on
+// these objects
+//console.log( civic.toString() );
+//console.log( mondeo.toString() );
+
+//Basic Constructor Pattern with Prototype approach
+function Car( model, year, miles ) {
+ 
+  this.model = model;
+  this.year = year;
+  this.miles = miles;
+ 
+}
+ //*********************************************************************/
+ 
+// Note here that we are using Object.prototype.newMethod rather than
+// Object.prototype so as to avoid redefining the prototype object
+function Car( model, year, miles ) {
+  this.model = model;
+  this.year = year;
+  this.miles = miles;
+}
+//Functions, like almost all objects in JavaScript, contain a "prototype" object. 
+//When we call a JavaScript constructor to create an object, 
+//all the properties of the constructor's prototype are then made available to the new object. 
+//a single instance of toString() will now be shared between all of the Car objects.
+Car.prototype.toString = function () {
+  return this.model + " has done " + this.miles + " miles";
+};
+ 
+// Usage:
+var civic = new Car( "Honda Civic", 2009, 20000 );
+var mondeo = new Car( "Ford Mondeo", 2010, 5000 );
+ 
+//console.log( civic.toString() );
+//console.log( mondeo.toString() );
+//*********************************************************************/
+
+
+
+//*********************************************************************/
+
+//Module Pattern
+
+//In order to approach to Modular design pattern, 
+//you need to understand these concept first
+
+//1) Anonymous Function
+//There are two ways you can use the functions. 
+//:- Function declaration 
+//:- Function definition. Here are using function definition expression.
+(function() {
+      // Your code goes here 
+}()); //IIFE: in which the function creates new scope and creates "privacy". 
+
+//After creating new scope, we need to namespace our code so that we can access any methods we return. 
+//2) Namespace:  if we add the namespace to the above piece of code then
+var module = (function() {
+}());//Module declared in the global scope, which means we can call it wherever we like, and even pass it into another Module.
+
+//3) Private Method: 
+var Module = (function () {
+  var privateMethod = function () {
+    // do something
+  };
+})();//Can't access the privateMethod outside the scope; 
+
+//4) Understand return:
+var Module = (function () {
+  var privateMethod = function () {
+    // do something
+  };
+  return {
+    publicMethod: function () {
+     privateMethod();
+    }
+  };
+})();//Module.publicMethod();
+
+
+//5) Closures:
+//If you execute a function inside a function, a closure is created. or other words
+// you dont have to return a function, you just have to call a function inside a function.
+//A closure is a special kind of object that combines two things: 
+//a function, and the environment in which that function was created. 
+//The environment consists of any local variables that were in-scope at the time that the closure was created.
+function counter(){
+    var i = 0;
+    return function(){
+            //console.log(i);
+            return i++;
+          }
+} 
+var a = counter(); a(); a(); a(); a(); a(); a();
+var b = counter(); b(); b(); b(); b(); b(); b();
+
+//Lets apply all the above concept to our 1st modular design pattern
+var CalcModule = (function(){
+                    var pub = {};
+                       
+                    pub.add = function(a, b) {
+                                 //console.log('in add()', a, b);
+                                 return a + b;
+                    };
+                      
+                    pub.sub = function(a, b) {
+                                 //console.log('in sub()', a, b);
+                                 return a - b;
+                    };
+                     
+                    return pub;
+})();
+CalcModule.add(5,2) //returns : 7
+CalcModule.sub(5,2) //returns : 3
+//JavaScript doesn’t provide any access modifiers, 
+//the private members inside a module were created using closures. 
+//And the module itself was created using anonymous function expression.
+
+//Add private member to the module
+var CalcModule = (function(){
+        var pub = {};
+        var mem = new Array(); //private variable
+                 
+        var storeInMemory = function(val) {  //private function
+                            mem.push(val);
+                    };
+             
+        pub.add = function(a, b) { 
+                     var result = a + b;
+                     storeInMemory(result); //call to private function
+                     return result;
+                  };
+ 
+         pub.sub = function(a, b) {
+                     var result = a - b;
+                     storeInMemory(result); //call to private function
+                     return result;
+                  };
+ 
+         pub.retrieveFromMemory = function() {
+                     return mem.pop();
+                 };
+ 
+               return pub;
+})();
+CalcModule.add(2,10);
+CalcModule.add(5,15);
+///console.log(CalcModule.retrieveFromMemory()); //outputs 20
+///console.log(CalcModule.retrieveFromMemory()); //outputs 12
+
+
+//Importing parameters in the module/Import mixin
+//Mixin: In object-oriented programming languages, a mixin is a class which contains a combination of methods from other classes.
+//Once the basic module is ready, 
+//we can pass parameters in the module during its initialization 
+
+var CalcModule = (function($){
+                       var pub = {};
+                       var INVALID = 'invalid input';
+                       pub.add = function(a,b){
+                                     if($.isNumeric(a) && $.isNumeric(b)){
+                                         return a+b;
+                                     }
+                                     else{
+                                         return INVALID;
+                                     }
+                       };
+                        
+                       pub.sub = function(a,b){
+                                     if($.isNumeric(a) && $.isNumeric(b)){
+                                          return a-b;
+                                     }
+                                     else{
+                                         return INVALID;
+                                     }
+                       };
+                        
+                       return pub;
+})(jQuery); //passed 'jQuery' global variable into local parameter '$'
+
+//Augmentation : the action or process of making or becoming greater in size or amount.
+//This functionality to extend the module with other members
+//The above private member CalcModule will be divided into two JS files:
+//Calc.js
+var CalcModule = (function($, pub){
+                        //jQuery will still be available via $
+                        var mem = new Array(); //private variable
+                         
+                        pub.storeInMemory = function(val){
+                                                mem.push(val);
+                                            };
+                         
+                        pub.retrieveFromMemory = function(){
+                                     return mem.pop();
+                       };
+ 
+                       return pub;
+})(jQuery, CalcModule || {});
+
+//CalcFunction.js
+var CalcModule = (function($, pub){
+                       //jQuery will still be available via $
+                       pub.add = function(a,b){ 
+                                     var result = a + b;
+                                     pub.storeInMemory(result);
+                                     return result;
+                                  };
+                        
+                       pub.sub = function(a,b){
+                                     var result = a - b;
+                                     pub.storeInMemory(result);
+                                     return result;
+                                  };
+                        
+                       return pub;
+}(jQuery, CalcModule || {}));
+
+//What did you notice? 
+//1: passing of parameters into the module
+//2: "CalcModule" as argument into the anonymous function & assigning it to "pub"
+//3: Adding two properties to "pub" storeInMemory & retrieveFromMemory
+//4: Returning "pub" which is assigned to variable "CalcModule"
+//5: (||) OR condition in the call, ???
+//This is what makes above files independent of each other with respect to order of execution. 
+//If the CalcModule doesn’t exists yet, a new object is created (using ‘{}’) 
+//and passed to the parameter ‘pub’ which is then assigned to CalcModule. 
+//This ability to allow loading of scripts in any order, converts a Strict Augmentation to Loosely Augmentation
+
+//Strict Augmentation: If the order in which these modules are loaded is defined 
+//Loose Augmentation: If the order is not important as in example above
+
+
+//Revealing Module Pattern
+//The variation to module pattern is called revealing module pattern
+var CalcModule = (function(){
+            var mem = new Array(); //private variable
+ 
+            var storeInMemory = function(val) {  //private function
+                mem.push(val);
+            };
+ 
+            var add = function(a, b) { 
+                        var result = a + b;
+                        storeInMemory(result); //call to private function
+                        return result;
+                    };
+ 
+            var sub = function(a, b) {
+                        var result = a - b;
+                        storeInMemory(result); //call to private function
+                        return result;
+                    };
+ 
+            var retrieveFromMemory = function() {
+                        return mem.pop();
+                    };
+ 
+            return {
+                add: add,
+                sub: sub,
+                popMemory: retrieveFromMemory
+            };
+})();
+
+//What did you notice in above example?
+//1: We are not creating "pub" variable and then adding properties and returning it;
+//2: We are creating public and private functions
+//3: In return statement, we are creating new object and adding properties to it;
+
+//Advantages of Revealing Module pattern
+//1) Consistent coding style inside the module for both private and public members.
+//2) Better control on the name of the public API, i.e., 
+//if it is required to change the name of add() method to addition(), 
+//all we need to do is change the name in the return statement without effecting the function name inside the module.
+//3) Control on what to make public, just adding/removing the properties in return statement is sufficient.
+//4) As always, cleaner code.
+
+//ReCap:
+//Module Pattern
+var module = (function () {
+
+    // private
+    var private_one = function () {};
+    var private_two = function () {};
+
+    // public
+    return {
+        public_one: function () {
+            private_one();
+        },
+        public_two: function () {
+            private_two();
+        }
+    };
+
+})();
+
+//Revealing Module Pattern
+var module = (function () {
+
+    // private
+    var private_one = function () {};
+    var private_two = function () {};
+
+    // public
+    return {
+        public_one: private_one,
+        public_two: private_two
+    };
+
+})();
+
+//Definitive Module Pattern
+var module = (function () {
+
+    // private
+    var _private = {
+        private_one: function () {},
+        private_two: function () {}
+    };
+
+    // public
+    var _public = {
+        public_one: _private.private_one,
+        public_two: _private.private_two
+    };
+
+    return _public;
+
+})();
+
+
+//*********************************************************************/
+
+
+//Singleton Pattern
+//the singleton pattern is a design pattern that is used to restrict instantiation of a class to one object.
+
+//JavaScript Singleton pattern ensure that only a single instance 
+//of the class may exits in application
+//This pattern comes in handy when you want to create a class 
+//whose functionality doesn’t change for its multiple instances for e.g. an Ajax handler or Util class.
+
+var Singleton = (function () {
+    var instance;
+ 
+    function createInstance() {
+        var object = new Object("I am the instance");
+        return object;
+    }
+ 
+    return {
+        getInstance: function () {
+            if (!instance) {
+                instance = createInstance();
+            }
+            return instance;
+        }
+    };
+})();
+ 
+function run() {
+ 
+    var instance1 = Singleton.getInstance();
+    var instance2 = Singleton.getInstance();
+ 
+    alert("Same instance? " + (instance1 === instance2));  
+}
+
+//What did you notice in the above example?
+//1) Singleton object is implemented as an immediate anonymous function. 
+//2) The getInstance method is Singleton's gatekeeper. 
+//  It returns the one and only instance of the object while maintaining 
+//  a private reference to it which is not accessible to the outside world.
+//3) Lazy Load pattern :checks if an instance has already been created; 
+//  if not, it creates one and stores it for future reference. 
+//All subsequent calls will receive the stored instance. 
+//Lazy loading is a CPU and memory saving technique by creating objects only when absolutely necessary.
+// 4) 
+
+//Let create a good example
+
+var Sun = {
+  publicEmitLight:function() { //console.log("emitted"); },
+  mass: 10000
+};
+//Sun instance created ! --> Implementing a basic singleton pattern can be 
+//as simple as creating a simple object literal, 
+//because the created object will be an instance itself
+//Disadvantage is no private member in the object!
+
+var Sun = (function(){
+  var sunInstance; //Private variable
+  
+  var createSun = function(){
+     var privateMass = 10000000000; //private
+     var looseMass = function(mass){
+         privateMass -= mass;    
+     }
+     var publicEmitLight = function(){
+              //some complex Nuclear fission 
+              //calling looseMass()
+              looseMass(10);
+     };
+     var getMass = function(){
+              return privateMass;
+     };
+     return {
+            emitLight: publicEmitLight,
+            getMass: getMass
+     };
+  };
+  
+  return {
+            getInstance: function(){
+                  if(!sunInstance){
+                      sunInstance = createSun(); 
+                  }
+                  return sunInstance; 
+            }
+          };
+})();
+//What did you notice in the above example?
+//1) Created sun variable, instantiated using module pattern
+//2) returning new property called as getInstance
+//3) to get instacne of sun we need to do is
+var mySun = Sun.getInstance();
+//4) Only public mthod getInstance() in Sun module, what are we dng inside this function
+//5) we check if sunInstance exist, if not its assigned with createSun() and returns sunInstance
+//6) Closure? Yes, sunInstance is inside a closure. So, getInstance ensures if sun doesnt exist it creates one before returning
+//and return the same instance of Sun 
+var sunA = Sun.getInstance();
+var sunB = Sun.getInstance();
+//console.log(sunA === sunB); //true
+sunB.emitLight(); //loose some Mass in sunB
+var massInSunA = sunA.getMass();
+var massInSunB = sunB.getMass();
+//console.log(massInSunA === massInSunB); //true
+
+
+
+//*********************************************************************/
+
+
+//Factory Pattern
+//1) Define an interface for creating an object, but let subclasses decide which class to instantiate.
+//2) 
+
+function Factory() {
+    this.createEmployee = function (type) { 
+        var employee;
+ 
+        if (type === "fulltime") {
+            employee = new FullTime();
+        } else if (type === "parttime") {
+            employee = new PartTime();
+        } else if (type === "temporary") {
+            employee = new Temporary();
+        } else if (type === "contractor") {
+            employee = new Contractor();
+        }
+ 
+        employee.type = type;
+ 
+        employee.say = function () {
+            log.add(this.type + ": rate " + this.hourly + "/hour");
+        }
+ 
+        return employee;
+    }
+}
+ 
+var FullTime = function () {
+    this.hourly = "$12";
+};
+ 
+var PartTime = function () {
+    this.hourly = "$11";
+};
+ 
+var Temporary = function () {
+    this.hourly = "$10";
+};
+ 
+var Contractor = function () {
+    this.hourly = "$15";
+};
+ 
+// log helper
+var log = (function () {
+    var log = "";
+ 
+    return {
+        add: function (msg) { log += msg + "\n"; },
+        show: function () { alert(log); log = ""; }	
+    }
+})();
+ 
+function run() {
+    var employees = [];
+    var factory = new Factory();
+ 
+    employees.push(factory.createEmployee("fulltime"));
+    employees.push(factory.createEmployee("parttime"));
+    employees.push(factory.createEmployee("temporary"));
+    employees.push(factory.createEmployee("contractor"));
+    
+    for (var i = 0, len = employees.length; i < len; i++) {
+        employees[i].say();
+    }
+ 
+    log.show();
+}
+//What did you notice here?
+//1) Factory object creates 4 types of employees
+//2) Each employee type has different hourly rates
+//3) createEmployee is actual factory method
+//4) Client/run we instruct what type of employee to create by passing a type argument into factory method.
+//5) log function for displaying the result;
+//so, lets get back to the factory method defination
+//A Factory can provide a generic interface for creating objects, where we can specify the type of factory object we wish to be created.
+//So, when to use factory pattern
+//1) When our object or component setup involves a high level of complexity
+//2) When we need to easily generate different instances of objects depending on the environment we are in
+//3) When we're working with many small objects or components that share the same properties
+//4) 
+
+
+//Example from addyosmani ebook 
+// A constructor for defining new cars
+function Car( options ) {
+  // some defaults
+  this.doors = options.doors || 4;
+  this.state = options.state || "brand new";
+  this.color = options.color || "silver";
+}
+ 
+// A constructor for defining new trucks
+function Truck( options){
+  this.state = options.state || "used";
+  this.wheelSize = options.wheelSize || "large";
+  this.color = options.color || "blue";
+}
+ 
+// FactoryExample.js
+// Define a skeleton vehicle factory
+function VehicleFactory() {}
+// Define the prototypes and utilities for this factory
+// Our default vehicleClass is Car
+VehicleFactory.prototype.vehicleClass = Car;
+// Our Factory method for creating new Vehicle instances
+VehicleFactory.prototype.createVehicle = function ( options ) {
+  switch(options.vehicleType){
+    case "car":
+      this.vehicleClass = Car;
+      break;
+    case "truck":
+      this.vehicleClass = Truck;
+      break;
+    //defaults to VehicleFactory.prototype.vehicleClass (Car)
+  }
+  return new this.vehicleClass( options );
+};
+ 
+// Create an instance of our factory that makes cars
+var carFactory = new VehicleFactory();
+var car = carFactory.createVehicle( {
+            vehicleType: "car",
+            color: "yellow",
+            doors: 6 } );
+ 
+// Test to confirm our car was created using the vehicleClass/prototype Car
+ 
+// Outputs: true
+console.log( car instanceof Car );
+// Outputs: Car object of color "yellow", doors: 6 in a "brand new" state
+console.log( car );
+
+// Create an instance of our factory that makes trucks
+var movingTruck = carFactory.createVehicle( {
+                      vehicleType: "truck",
+                      state: "like new",
+                      color: "red",
+                      wheelSize: "small" } );
+ 
+// Test to confirm our truck was created with the vehicleClass/prototype Truck
+ 
+// Outputs: true
+console.log( movingTruck instanceof Truck );
+ 
+// Outputs: Truck object of color "red", a "like new" state
+// and a "small" wheelSize
+console.log( movingTruck );
+
+
+//OK, now thats lot to absorb; Lets recap what we learnt
+//1) What is difference b/w constructor function and factory function?
+// Basic difference is construction function is used with keyword "new"
+// Factory function is called like a "regular" function!
+//Dint understand?
+// Constructor: 
+var objFromConstructor = new ConstructorFunction();
+function ConstructorFunction() {
+   this.someProp1 = "1";
+   this.someProp2 = "2";
+}
+ConstructorFunction.prototype.someMethod = function() { /* whatever */ };
+
+//Factory
+var objFromFactory = factoryFunction();
+function factoryFunction() {
+   var obj = {
+      someProp1 : "1";
+      someProp2 : "2";
+   };
+   // other code to manipulate obj in some way here
+   return obj;
+}
+//One advantage to factory functions is when the object to be returned 
+//could be of several different types depending on some parameter
+
+//Not covered abstract factory method
+
+
+//*********************************************************************/
+//Facade Pattern
+
+//1) A facade or façade (/fəˈsɑːd/) is generally one exterior side of a building, usually, but not always, the front
+//2) This pattern provides a convenient higher-level interface to a larger body of code, 
+//hiding its true underlying complexity
+//3) Facades are a structural pattern which can often be seen in JavaScript libraries like jQuery where, 
+//although an implementation may support methods with a wide range of behaviors,
+//only a "facade" or limited abstraction of these methods is presented to the public for use.
+//4) Whenever we use jQuery's $(el).css() or $(el).animate() methods, we're actually using a Facade 
+//- the simpler public interface that avoid us having to manually call the many internal methods in jQuery core 
+//required to get some behavior working
+//5) The intent of the Façade is to provide a high-level interface (properties and methods) 
+//that makes a subsystem or toolkit easy to use for the client.
+//6) Façades are frequently combined with other design patterns. Facades themselves are often implemented as singleton factories
+//7) The facade pattern is both extremely interesting and very useful for adding an extra layer of security to your already minified code
+//8) 
+
+
+// a simple facade that masks the various browser-specific methods
+function addEvent( element, event, callback ) {
+  
+  if( window.addEventListener ) {
+    element.addEventListener( event, callback, false );
+  } else if( window.attachEvent ) {
+    element.attachEvent( 'on' + event, callback );
+  } else {
+    element[ 'on' + event ] = callback;
+  }
+}
+
+//Lets see this example
+//Initial Version
+var foo = document.getElementById('foo');
+    foo.style.color = 'red';
+    foo.style.width = '150px';
+     
+var bar = document.getElementById('bar');
+    bar.style.color = 'red';
+    bar.style.width = '150px';
+     
+var baz = document.getElementById('baz');
+    baz.style.color = 'red';
+    baz.style.width = '150px';
+    
+//Make it more easier
+function setStyle(elements, property, value) {
+    for (var i=0, length = elements.length; i < length; i++) {
+        document.getElementById(elements[i]).style[property] = value;
+    }
+}
+// Now you can write this:
+setStyle(['foo', 'bar', 'baz'], 'color', 'red');
+setStyle(['foo', 'bar', 'baz'], 'width', '150px');
+
+// Make use the patter example
+function setStyles(elements, styles) {
+    for (var i=0, length = elements.length; i < length; i++) {
+        var element = document.getElementById(elements[i]);
+         
+        for (var property in styles) {
+            element.style[property] = styles[property];
+        }
+    }
+}
+ 
+//Now you can just write this:
+setStyles(['foo', 'bar', 'baz'], {
+
+    color: 'red',
+    width: '150px'
+});
+
+
+
+//Another example of facade using module pattern;
+
+var module = (function() {  
+    var _private = {  i: 5,
+          get: function() {  console.log('current value:' + this.i);  
+        },
+          set: function(val) {  this.i = val;  
+        },
+          run: function() {  console.log('running');  
+        },
+          jump: function() {  console.log('jumping');  
+        }  
+    };
+    return {  facade: function(args) {  _private.set(args.val);  _private.get();  
+            if (args.run) {  _private.run();  
+            }  
+        }  
+    }
+}());
+module.facade({ run: true, val: 10 }); //outputs current value: 10, running
+
+//Another example using jQuery
+//jQuery is very good example – $(‘#id’).css, $.ajax({}) – all of theme are build on Facade
+//higher level interfaces (facades) for $.ajax();
+$.get( url, data, callback, dataType );
+$.post( url, data, callback, dataType );
+$.getJSON( url, data, callback );
+$.getScript( url, callback );
+
+// $.get()
+$.ajax({
+  url: url,
+  data: data,
+  dataType: dataType
+}).done( callback );
+ 
+// $.post
+$.ajax({
+  type: "POST",
+  url: url,
+  data: data,
+  dataType: dataType
+}).done( callback );
+ 
+// $.getJSON()
+$.ajax({
+  url: url,
+  dataType: "json",
+  data: data,
+}).done( callback );
+ 
+// $.getScript()
+$.ajax({
+  url: url,
+  dataType: "script",
+}).done( callback );
+
+
+//http://www.dofactory.com/javascript/facade-design-pattern
+
+
+
+
+//*********************************************************************/
+
+//Observer Pattern
+//1) The Observer Pattern defines a one-to-many dependency between
+//objects so that when one object changes state, all its dependents are notified and updated automatically.
+//2) The Observer is a design pattern where an object (known as a subject) 
+//maintains a list of objects depending on it (observers), 
+//automatically notifying them of any changes to state.
+//3) Define a one-to-many dependency between objects so that when one object changes state, 
+//all its dependents are notified and updated automatically.
+//4)The observer pattern is a software design pattern in which an object, called the subject, 
+//maintains a list of its dependents, called observers, and notifies them automatically of any state changes, 
+//usually by calling one of their methods. : WIKI
+
+//https://github.com/addyosmani/essential-js-design-patterns/blob/master/diagrams/observer.png
+
+//Subject : maintain list of observers, faciliates adding, removing observers.
+//Observer : provides a update interface for object that needed to notified to subjects changed state.
+//ConcreteSubject
+//ConcerteObserver
+
+//Publish/Subscribe Pattern
+//Pub/Sub using jQuery
+
+/*
+* Publishers are in charge of "publishing" i.e. creating the event.
+* They're also in charge of "notifying" (firing the event).
+*/
+var Publisher = new Observable;
+/*
+* Subscribers basically... "subscribe" (or listen).
+* Once they've been "notified" their callback functions are invoked.
+*/
+var Subscriber = function(news) {
+// news delivered directly to my front porch
+};
+Publisher.subscribeCustomer(Subscriber);
+/*
+* Deliver a paper:
+* sends out the news to all subscribers.
+*/
+Publisher.deliver('extra, extra, read all about it');
+/*
+* That customer forgot to pay his bill.
+*/
+Publisher.unSubscribeCustomer(Subscriber);
+
+
+/*
+* Newspaper Vendors
+* setup as new Publisher objects
+*/
+var NewYorkTimes = new Publisher;
+var AustinHerald = new Publisher;
+var SfChronicle = new Publisher;
+/*
+* People who like to read
+* (Subscribers)
+*
+* Each subscriber is set up as a callback method.
+* They all inherit from the Function prototype Object.
+*/
+var Joe = function(from) {
+console.log('Delivery from '+from+' to Joe');
+};
+var Lindsay = function(from) {
+console.log('Delivery from '+from+' to Lindsay');
+};
+var Quadaras = function(from) {
+console.log('Delivery from '+from+' to Quadaras');
+};
+/*
+* Here we allow them to subscribe to newspapers
+* which are the Publisher objects.
+* In this case Joe subscribes to the NY Times and
+* the Chronicle. Lindsay subscribes to NY Times
+* Austin Herald and Chronicle. And the Quadaras
+* respectfully subscribe to the Herald and the Chronicle
+*/
+Joe.subscribe(NewYorkTimes).subscribe(SfChronicle);
+Lindsay.subscribe(AustinHerald).subscribe(SfChronicle).subscribe(NewYorkTimes);
+Quadaras.subscribe(AustinHerald).subscribe(SfChronicle);
+/*
+* Then at any given time in our application, our publishers can send
+* off data for the subscribers to consume and react to.
+*/
+NewYorkTimes.
+deliver('Here is your paper! Direct from the Big apple');
+AustinHerald.
+deliver('News').
+deliver('Reviews').
+deliver('Coupons');
+SfChronicle.
+deliver('The weather is still chilly').
+deliver('Hi Mom! I\'m writing a book');
+
+//Build the API
+function Publisher() {
+  this.subscribers = [];
+}
+//Delivery Method
+Publisher.prototype.deliver = function(data) {
+  this.subscribers.forEach(
+      function(fn) {
+        fn(data);
+      }
+  );
+  return this;
+};
+//Subscriber Method
+Function.prototype.subscribe = function(publisher) {
+  var that = this;
+  var alreadyExists = publisher.subscribers.some(
+    function(el) {
+      if ( el === that ) {
+        return;
+      }
+    }
+  );
+  if ( !alreadyExists ) {
+    publisher.subscribers.push(this);
+  }
+  return this;
+};
+
+//UnSubscribe
+Function.prototype.unsubscribe = function(publisher) {
+  var that = this;
+  publisher.subscribers = publisher.subscribers.filter(
+    function(el) {
+      if ( el !== that ) {
+        return el;
+      }
+    }
+  );
+  return this;
+};
+
+var publisherObject = new Publisher;
+var observerObject = function(data) {
+  // process data
+  console.log(data);
+  // unsubscribe from this publisher
+arguments.callee.unsubscribe(publisherObject);
+};
+
+observerObject.subscribe(publisherObject);
+
+
+//using jQuery
+(function( $ ) {
+ 
+  var o = $({});
+ 
+  $.subscribe = function() {
+    o.on.apply(o, arguments);
+  };
+ 
+  $.unsubscribe = function() {
+    o.off.apply(o, arguments);
+  };
+ 
+  $.publish = function() {
+    o.trigger.apply(o, arguments);
+  };
+ 
+}( jQuery ));
+
+var topics = {};
+ 
+jQuery.Topic = function( id ) {
+    var callbacks,
+        topic = id && topics[ id ];
+    if ( !topic ) {
+        callbacks = jQuery.Callbacks();
+        topic = {
+            publish: callbacks.fire,
+            subscribe: callbacks.add,
+            unsubscribe: callbacks.remove
+        };
+        if ( id ) {
+            topics[ id ] = topic;
+        }
+    }
+    return topic;
+};
+
+// Subscribers
+$.Topic( "mailArrived" ).subscribe( fn1 );
+$.Topic( "mailArrived" ).subscribe( fn2 );
+$.Topic( "mailSent" ).subscribe( fn1 );
+ 
+// Publisher
+$.Topic( "mailArrived" ).publish( "hello world!" );
+$.Topic( "mailSent" ).publish( "woo! mail!" );
+ 
+//  Here, "hello world!" gets pushed to fn1 and fn2
+//  when the "mailArrived" notification is published
+//  with "woo! mail!" also being pushed to fn1 when
+//  the "mailSent" notification is published.
+ 
+// Outputs:
+// hello world!
+// fn2 says: hello world!
+// woo! mail!
+
+
+//The observer pattern (also known as Publish/Subscribe or Pub/Sub for short)
+//is one of the most commonly used patterns in JavaScript. 
+//This is because event handling on DOM elements, 
+//which is quite common in JavaScript applications of all sizes, is done via the Observer pattern.
+
+var Observable = function() {
+    this.subscribers = [];
+}
+
+Observable.prototype = {
+    subscribe: function(callback) {
+        // Just add the callback to the subscribers list
+        this.subscribers.push(callback);
+    },
+    unsubscribe: function(callback) {
+        var i = 0,
+            len = this.subscribers.length;
+
+        // Iterate through the array and if the callback is
+        // found, remove it from the list of subscribers.
+        for (; i < len; i++) {
+            if (this.subscribers[i] === callback) {
+                this.subscribers.splice(i, 1);
+                // Once we've found it, we don't need to
+                // continue, so just return.
+                return;
+            }
+        }
+    },
+    publish: function(data) {
+        var i = 0,
+            len = this.subscribers.length;
+
+        // Iterate over the subscribers array and call each of
+        // the callback functions.
+        for (; i < len; i++) {
+            this.subscribers[i](data);
+        }
+    }
+};
+
+// The observer is simply a function
+var Observer = function (data) {
+    console.log(data);
+}
+
+// Here's where it gets used.
+observable = new Observable();
+observable.subscribe(Observer);
+observable.publish('We published!');
+// 'We published!' will be logged in the console
+observable.unsubscribe(Observer);
+observable.publish('Another publish!');
+// Nothing happens because there are no longer any subscribed observers
+
+
+
+//Good Example using jQuery
+http://jsfiddle.net/JwJsP/1/
+
+
+
+//Example of Observer Pattern
+
+function Click() {
+    this.handlers = [];  // observers
+}
+ 
+Click.prototype = {
+ 
+    subscribe: function(fn) {
+        this.handlers.push(fn);
+    },
+ 
+    unsubscribe: function(fn) {
+        this.handlers = this.handlers.filter(
+            function(item) {
+                if (item !== fn) {
+                    return item;
+                }
+            }
+        );
+    },
+ 
+    fire: function(o, thisObj) {
+        var scope = thisObj || window;
+        this.handlers.forEach(function(item) {
+            item.call(scope, o);
+        });
+    }
+}
+ 
+// log helper
+ 
+var log = (function() {
+    var log = "";
+ 
+    return {
+        add: function(msg) { log += msg + "\n"; },
+        show: function() { alert(log); log = ""; }
+    }
+})();
+ 
+function run() {
+ 
+    var clickHandler = function(item) { 
+        log.add("fired: " + item); 
+    };
+ 
+    var click = new Click();
+ 
+    click.subscribe(clickHandler);
+    click.fire('event #1');
+    click.unsubscribe(clickHandler);
+    click.fire('event #2');
+    click.subscribe(clickHandler);
+    click.fire('event #3');
+ 
+    log.show();
+}
+
+//*********************************************************************/
+
+//MVC Design patterns
+
+//using simple javascript
+
+var M = {}, V = {}, C = {};
+
+M.data = "hello world";
+
+V.render = function (M) { alert(M.data); }
+
+C.handleOnload = function () { V.render(M); }
+
+window.onload = C.handleOnLoad;
+
+
+//Controller (C) listens on some kind of interaction/event stream. In this case it's the page's loading event.
+
+//Model (M) is an abstraction of a data source.
+
+//View (V) knows how to render data from the Model.
+
+//The Controller tells to View to do something with something from the Model.
+
+//In above example
+//the View knows nothing about the Model apart from it implements some interface
+//the Model knows nothing of the View and the Controller
+//the Controller knows about both the Model and the View and tells the View to go do something with the data from the Model.
+
+//To learn more on MVC 
+http://todomvc.com/
+  
+</script>
+</body>
+</html>

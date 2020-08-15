@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <title>Observer Pattern</title>
+  
+</head>
+<body>
+    <button id="addBtn" >Add Checkbox</button>
+	<input type="checkbox" id="mainCheckBox" />
+	<div id="container"></div>
+	
+	 <script>
+   
+		function ObserverList() {
+			this.observerList = [];
+		}
+		
+		ObserverList.prototype.add = function (observer){
+			this.observerList.push(observer);
+		}
+		
+		ObserverList.prototype.count = function (observer){
+			this.observerList.length;
+		}
+		
+		ObserverList.prototype.get = function (i){
+			return this.observerList[i];
+		}
+		
+		
+		
+		
+		function Subject() {
+			this.observers = new ObserverList();
+		}
+		
+		Subject.prototype.addObserver = function (observer){
+			this.observers.add(observer)
+			
+		}
+		
+		Subject.prototype.notify = function (context){
+			var count = this.observers.observerList.length;
+			for(var i=0; i< count; i++) {
+				this.observers.get(i).update(context);
+			}
+		}
+		
+		function Observer(){
+			this.update = function (){};
+		}
+		
+		var addBtn = document.querySelector('#addBtn');
+		var checkBox = document.querySelector('#mainCheckBox');
+		var container = document.querySelector('#container');
+		
+		extend(checkBox, new Subject());
+		
+		checkBox.onclick = function(){
+			checkBox.notify(checkBox.checked);
+		}
+		
+		
+		
+		addBtn.onclick = addObserver;
+		
+		
+		
+		function extend(source,target) {
+				
+			for(var key in target){
+				
+				source[key] = target[key];
+			}
+			
+		}
+		
+		function addObserver() {
+			var check = document.createElement('input');
+			check.type = 'checkbox';
+			extend(check, new Observer());
+			check.update = function (value){
+				this.checked = value 
+			}
+			checkBox.addObserver(check);
+			
+			container.appendChild(check);
+			
+		}
+		
+		
+		
+   
+   </script>
+</body>
+</html>
